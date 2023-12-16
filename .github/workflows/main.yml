@@ -242,3 +242,16 @@ jobs:
         env:
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate Github changelog content
+        run: |
+          RELEASE_ANCHOR=$(echo $GITHUB_REF_NAME | sed 's/./-/g')
+          echo "See https://setuptools.pypa.io/en/stable/history.html#$RELEASE_ANCHOR" > changelog.md
+      - name: Create Github release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+          prerelease: false
+          name: ${{ github.ref_name }}
+          body_path: changelog.md
